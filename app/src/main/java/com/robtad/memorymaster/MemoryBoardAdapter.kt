@@ -72,7 +72,7 @@ class MemoryBoardAdapter(
 
         fun bind(position: Int) {
             val memoryCard: MemoryCard = cards[position]
-            imageButton.setImageResource(if (memoryCard.isFaceUp) memoryCard.identifier else R.drawable.backface)
+            imageButton.setImageResource((if (memoryCard.isFaceUp) memoryCard.identifier["image"] else R.drawable.backface) as Int)
 
             //gray out the images that are matched to give user visual indication: next 3 lines
             imageButton.alpha = if(memoryCard.isMatched) .4f else 1.0f

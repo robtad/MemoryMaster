@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity()
     private lateinit var adapter: MemoryBoardAdapter
     private lateinit  var memoryGame: MemoryGame
 
-    private var boardSize: BoardSize = BoardSize.EASY
+    private var boardSize: BoardSize = BoardSize.MEDIUM
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -77,7 +77,12 @@ class MainActivity : AppCompatActivity()
 
         if(memoryGame.flipCard(position)){
             Log.i(TAG, "Found a Match! Num pairs found: ${memoryGame.numPairsFound} ")
+
         }
+
+        memoryGame.displayScore(position)
+        Log.i(TAG, "SCORE =  ${memoryGame.score} ")
+
         adapter.notifyDataSetChanged()
     }
 
