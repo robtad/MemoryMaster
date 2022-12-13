@@ -10,6 +10,7 @@ class MemoryGame(private val boardSize: BoardSize){
 
     val cards: List<MemoryCard>
     var numPairsFound = 0
+    private var numCardFlips = 0
     private var indexOfSingleSelectedCard: Int? = null
     private var indexOfCurrentCard: Int? = null
     var score: Float = 0.0F
@@ -37,6 +38,7 @@ class MemoryGame(private val boardSize: BoardSize){
 
 
     fun flipCard(position: Int) : Boolean{
+        numCardFlips++
         val card: MemoryCard = cards[position]
         //Logic: flipping cards previously flipped on the click of the third card
         //Three cases:
@@ -138,6 +140,10 @@ class MemoryGame(private val boardSize: BoardSize){
 
     fun isCardFaceUp(position: Int): Boolean {
         return cards[position].isFaceUp
+    }
+
+    fun getNumMoves(): Int {
+        return numCardFlips/2
     }
 
 
