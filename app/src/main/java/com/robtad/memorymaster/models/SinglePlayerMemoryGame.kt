@@ -7,7 +7,7 @@ import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
 import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
 import java.util.HashMap
 
-class MemoryGame(private val boardSize: BoardSize){
+class SinglePlayerMemoryGame(private val boardSize: BoardSize){
 
     val cards: List<MemoryCard>
     var numPairsFound = 0
@@ -94,16 +94,16 @@ class MemoryGame(private val boardSize: BoardSize){
 
 
 
-       if(cards[position1].identifier != cards[position2].identifier){
-           if (house1 == house2){ //if cards do not match but from the house
-               point -= ((cardPoint1 + cardPoint2)/ housePoint1 )
-           }else{ //if cards do not match and not from the same house
-               point -= (((cardPoint1 + cardPoint2)/2) * housePoint1 * housePoint2 )
-           }
-           //return score
-       }else{ //if cards match. (i.e same card from the same house)
-           point += (2*cardPoint1*housePoint1)
-       }
+        if(cards[position1].identifier != cards[position2].identifier){
+            if (house1 == house2){ //if cards do not match but from the house
+                point -= ((cardPoint1 + cardPoint2)/ housePoint1 )
+            }else{ //if cards do not match and not from the same house
+                point -= (((cardPoint1 + cardPoint2)/2) * housePoint1 * housePoint2 )
+            }
+            //return score
+        }else{ //if cards match. (i.e same card from the same house)
+            point += (2*cardPoint1*housePoint1)
+        }
 
         return point
     }

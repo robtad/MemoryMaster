@@ -7,14 +7,16 @@ import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
 import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
 import java.util.HashMap
 
-class MemoryGame(private val boardSize: BoardSize){
+class MultiPlayerMemoryGame(private val boardSize: BoardSize){
 
     val cards: List<MemoryCard>
     var numPairsFound = 0
     private var numCardFlips = 0
     private var indexOfSingleSelectedCard: Int? = null
     private var indexOfCurrentCard: Int? = null
-    var score: Float = 0.0F
+    var playerFlag = 0
+    var score1: Float = 0.0F //player1 score
+    var score2: Float = 0.0F //player2 score
     private var gameTypeTag = 0 //gameTypeTage is an integer variable to denote if the game is single or multi player
     init {
         //How pictures will be selected to be displayed on the board
@@ -66,6 +68,7 @@ class MemoryGame(private val boardSize: BoardSize){
     ///////// GAME SCORE LOGIC HERE
     fun displayScore(position: Int)  {
 
+
         if(indexOfCurrentCard == null){
             //0 or 2 cards previously flipped over
             indexOfCurrentCard = position
@@ -73,7 +76,14 @@ class MemoryGame(private val boardSize: BoardSize){
         }else{
             //exactly one card previously flipped over
             //foundMatch = checkForMatch(indexOfCurrentCard!!, position)
-            score += scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
+            playerFlag++
+            if (playerFlag % 2 != 0){// ---> turn of the first player
+                score1 += scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
+            }
+            else{//playerFlag % 2 == 0 ---> turn of the second player
+                score2 += scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
+            }
+            //score += scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
 
             indexOfCurrentCard = null
         }
@@ -94,16 +104,16 @@ class MemoryGame(private val boardSize: BoardSize){
 
 
 
-       if(cards[position1].identifier != cards[position2].identifier){
-           if (house1 == house2){ //if cards do not match but from the house
-               point -= ((cardPoint1 + cardPoint2)/ housePoint1 )
-           }else{ //if cards do not match and not from the same house
-               point -= (((cardPoint1 + cardPoint2)/2) * housePoint1 * housePoint2 )
-           }
-           //return score
-       }else{ //if cards match. (i.e same card from the same house)
-           point += (2*cardPoint1*housePoint1)
-       }
+        if(cards[position1].identifier != cards[position2].identifier){
+            if (house1 == house2){ //if cards do not match but from the house
+                point -= ((cardPoint1 + cardPoint2)/ housePoint1 )
+            }else{ //if cards do not match and not from the same house
+                point -= (((cardPoint1 + cardPoint2)/2) * housePoint1 * housePoint2 )
+            }
+            //return score
+        }else{ //if cards match. (i.e same card from the same house)
+            point += (2*cardPoint1*housePoint1)
+        }
 
         return point
     }
