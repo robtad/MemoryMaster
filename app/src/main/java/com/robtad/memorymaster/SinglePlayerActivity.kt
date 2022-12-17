@@ -3,6 +3,8 @@ package com.robtad.memorymaster
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -18,16 +20,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.robtad.memorymaster.models.BoardSize
 import com.robtad.memorymaster.models.MemoryCard
 import com.robtad.memorymaster.models.SinglePlayerMemoryGame
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
+import java.util.concurrent.TimeUnit
+
 
 class SinglePlayerActivity : AppCompatActivity()
 {
-    companion object{
-        private const val TAG = "SinglePlayerActivity"
-    }
+
+
+
+    private val TAG = "SinglePlayerActivity"
+
 
     private lateinit var clRoot: ConstraintLayout
     private lateinit var rvBoard: RecyclerView  //lateinit (late initialization) coz the variables will be set onCreate method later
@@ -38,6 +40,20 @@ class SinglePlayerActivity : AppCompatActivity()
     private lateinit  var memoryGame: SinglePlayerMemoryGame
 
     private var boardSize: BoardSize = BoardSize.EASY
+    //
+    private var indexOfCurrentCard: Int? = null
+
+    //for the countdown
+    var remainingSecond: Float = 0f
+    val gameTime: Long = 45000
+    val gameTimeSeconds: Float = gameTime.toFloat()/1000
+    var countDownTimer: CountDownTimer? = null
+    //var remainingSecond:Long = 0
+    private lateinit var timerText: MenuItem
+
+    //score
+    private var score: Float = 0.0F
+
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -57,6 +73,36 @@ class SinglePlayerActivity : AppCompatActivity()
     //for refresh button
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+
+        var timerText: MenuItem = menu!!.findItem(R.id.mi_count_down)
+        //
+        countDownTimer = object : CountDownTimer(gameTime, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsLeft: String = "Time: " + (TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished))
+                remainingSecond = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished).toFloat()
+                timerText.title = secondsLeft
+                //gameTime = millisUntilFinished
+                if(memoryGame.haveWonGame()){
+                    countDownTimer?.cancel()
+                    timerText.title = secondsLeft
+                }
+
+            }
+
+            override fun onFinish() {
+                timerText.title = "TimeOver"
+                Snackbar.make(clRoot, "Game over!", Snackbar.LENGTH_LONG).show()
+                Handler().postDelayed({
+                    //setupBoard()
+                    goToGameModeActivity()
+                }, 5000)
+
+                //setupBoard()
+            }
+
+        }.start()
+
+
         return true
     }
 
@@ -118,11 +164,17 @@ class SinglePlayerActivity : AppCompatActivity()
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Ok"){_,_ ->
                 positiveClickListener.onClick(null)
+                countDownTimer?.start()
             }.show()
     }
 
+    private fun goToGameModeActivity(){
+        startActivity(Intent(this , GameModeActivity::class.java))
+    }
 
     private fun setupBoard() {
+        //starting the timer
+        countDownTimer?.start()
 
         //resetting the text view at the bottom (moves and score) depending on the board size
         when (boardSize){
@@ -158,6 +210,69 @@ class SinglePlayerActivity : AppCompatActivity()
 
     }
 
+///
+    fun displayScore(position: Int)  {
+
+        if(indexOfCurrentCard == null){
+            //0 or 2 cards previously flipped over
+            indexOfCurrentCard = position
+
+        }else{
+            //exactly one card previously flipped over
+            //foundMatch = checkForMatch(indexOfCurrentCard!!, position)
+            score += scoreCalculator(indexOfCurrentCard!!, position)
+            //scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
+            Log.i(TAG, "ScoreSPA =  ${score}") //Log.i --> i = info
+
+            indexOfCurrentCard = null
+        }
+
+        //return score
+    }
+
+
+
+    private fun scoreCalculator(position1: Int, position2: Int): Float {
+
+        //Find a way to check the houses of the cards that are not matched
+        //var array = FloatArray(2) //the first element of array represents the if conditions below: first if 1, second else 2, last else 3
+        var point: Float = 0.0F
+        var house1 = memoryGame.cards[position1].identifier["house"]
+        var house2 = memoryGame.cards[position2].identifier["house"]
+        var housePoint1: Float = memoryGame.cards[position1].identifier["housePoint"].toString().toFloat()
+        var housePoint2: Float = memoryGame.cards[position2].identifier["housePoint"].toString().toFloat()
+        var cardPoint1: Float = memoryGame.cards[position1].identifier["cardPoint"].toString().toFloat()
+        var cardPoint2: Float = memoryGame.cards[position2].identifier["cardPoint"].toString().toFloat()
+
+
+        if(memoryGame.cards[position1].identifier != memoryGame.cards[position2].identifier){
+            if (house1 == house2){ //if cards do not match but from the same house
+                point -= ((cardPoint1 + cardPoint2)/ housePoint1 ) * ((gameTimeSeconds-remainingSecond)/10)
+
+                return point
+                //secondsLeft
+                //Log.i(TAG, "RemainingSecond =  ${spActivity.getRemainingSeconds()}") //Log.i --> i = info
+
+            }else{ //if cards do not match and not from the same house
+                point -= (((cardPoint1 + cardPoint2)/2) * housePoint1 * housePoint2 ) *  ((gameTimeSeconds-remainingSecond)/10)
+
+                return point
+                //Log.i(TAG, "RemainingSeconds =  ${spActivity.getRemainingSeconds()}") //Log.i --> i = info
+
+            }
+            //return score
+        }else{ //if cards match. (i.e same card from the same house)
+            point += (2*cardPoint1*housePoint1)*(remainingSecond/10)
+
+            return point
+            //Log.i(TAG, "RemainingSeconds =  ${spActivity.getRemainingSeconds()}") //Log.i --> i = info
+
+        }
+
+        //return array
+    }
+    //////// GAME SCORE LOGIC UP HERE
+
 
     private fun updateGameWithFlip(position: Int) {
         //Error handling
@@ -186,9 +301,15 @@ class SinglePlayerActivity : AppCompatActivity()
         //the following part executes after passing the above error checks so they are the right moves
         //displaying game score on every move
         memoryGame.displayScore(position)//this calculates game score after each move
-        Log.i(TAG, "SCORE =  ${memoryGame.score} ")
-        tvNumPairs.text = "Score: ${memoryGame.score}"
+        displayScore(position)//this calculates game score after each move
+        //Log.i(TAG, "SCORE =  ${memoryGame.score} ")
+        score = String.format("%.2f", score).toFloat()
 
+        tvNumPairs.text = "Score: ${score}"
+        //tvNumPairs.text = "Score: ${memoryGame.score}"
+
+        Log.i(TAG, "Seconds Left =  ${remainingSecond} sec ")
+        Log.i(TAG, "Seconds Elapsed =  ${(gameTimeSeconds-remainingSecond)/10} sec ")
         //showing number of moves
         tvNumMoves.text = "Moves: ${memoryGame.getNumMoves()}"
         adapter.notifyDataSetChanged()

@@ -1,10 +1,10 @@
 package com.robtad.memorymaster
 
-import android.app.PendingIntent.getActivity
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -20,7 +20,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.robtad.memorymaster.models.BoardSize
 import com.robtad.memorymaster.models.MultiPlayerMemoryGame
+import kotlinx.coroutines.NonCancellable.cancel
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.schedule
+import kotlin.concurrent.timer
 
 class MultiPlayerActivity : AppCompatActivity()
 {
@@ -37,9 +41,13 @@ class MultiPlayerActivity : AppCompatActivity()
     private lateinit  var memoryGame: MultiPlayerMemoryGame
 
     private var boardSize: BoardSize = BoardSize.EASY
+    //for the countdown
     var gameTime: Long = 10000;
+    var countDownTimer: CountDownTimer? = null
+    var remainingSecond:Long = 0
+    private lateinit var timerText: MenuItem
 
-
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -50,6 +58,7 @@ class MultiPlayerActivity : AppCompatActivity()
         tvNumMoves = findViewById(R.id.tvNumMoves)
         tvNumPairs = findViewById(R.id.tvNumPairs)
 
+        //timerText = findViewById(R.id.mi_count_down)
         setupBoard()
 
     }
@@ -61,21 +70,25 @@ class MultiPlayerActivity : AppCompatActivity()
         //////
         var timerText: MenuItem = menu!!.findItem(R.id.mi_count_down)
         //
-        var countDownTimer = object : CountDownTimer(gameTime, 1000) {
+        countDownTimer = object : CountDownTimer(gameTime, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsLeft: String = "Time: " + (TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished))
-
+                remainingSecond = millisUntilFinished
                 timerText.title = secondsLeft
                 gameTime = millisUntilFinished
+                if(memoryGame.haveWonGame()){
+                    countDownTimer?.cancel()
+                    timerText.title = secondsLeft
+                }
 
             }
 
             override fun onFinish() {
                 timerText.title = "TimeOver"
                 Snackbar.make(clRoot, "Game over!", Snackbar.LENGTH_LONG).show()
-                //startActivity(Intent(this , GameModeActivity::class.java))
-
-                goToGameModePage()
+                Handler().postDelayed({
+                    setupBoard()
+                }, 5000)
 
                 //setupBoard()
             }
@@ -91,43 +104,10 @@ class MultiPlayerActivity : AppCompatActivity()
         startActivity(Intent(this , GameModeActivity::class.java))
 
     }
-
-    /*
-    long timer = 10000;
-    public Boolean onCreateOptionsMenu(Menu menu)
-    {
-            super.onCreateOptionsMenu(menu);
-            getMenuInflater().inflate(R.menu.menu, menu);
-    
-           final MenuItem  counter = menu.findItem(R.id.counter);
-            new CountDownTimer(timer, 1000) {
-    
-              public void onTick(long millisUntilFinished) {
-                 long millis = millisUntilFinished;
-                 String  hms = (TimeUnit.MILLISECONDS.toHours(millis))+":"+(TimeUnit.MILLISECONDS.toMinutes(millis) -TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)))+":"+ (TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-    
-                 counter.setTitle(hms);
-                 timer = millis;
-    
-                }
-    
-            public void onFinish() {
-                 counter.setTitle("done!");
-                }
-             }.start();
-    
-             return  true;
-    
-     }
-     */
-/*
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        var timer: MenuItem = menu!!.findItem(R.id.mi_count_down)
-        timer.setTitle("00:00")
-        return true
+    fun pauseCountDown() {
+        countDownTimer?.cancel()
     }
 
- */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             //refreshing the board
@@ -186,6 +166,7 @@ class MultiPlayerActivity : AppCompatActivity()
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Ok"){_,_ ->
                 positiveClickListener.onClick(null)
+                countDownTimer?.start()
             }.show()
     }
 
@@ -193,6 +174,12 @@ class MultiPlayerActivity : AppCompatActivity()
     private fun setupBoard() {
 
         //resetting the text view at the bottom (moves and score) depending on the board size
+
+        //gameTime = 60000
+        //starting the timer
+        countDownTimer?.start()
+
+
         when (boardSize){
             BoardSize.EASY -> {
                 tvNumMoves.text = "EASY"
@@ -234,6 +221,8 @@ class MultiPlayerActivity : AppCompatActivity()
 
         if(memoryGame.haveWonGame()){
             //Alert user
+            pauseCountDown()
+            //timerText.title = remainingSecond.toString()
             Snackbar.make(clRoot, "You already won!", Snackbar.LENGTH_LONG).show()
             return
         }

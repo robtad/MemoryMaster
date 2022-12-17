@@ -1,6 +1,8 @@
 package com.robtad.memorymaster.models
 
+import android.util.Log
 import com.robtad.memorymaster.GameModeActivity
+import com.robtad.memorymaster.SinglePlayerActivity
 import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
 import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
 import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
@@ -9,12 +11,22 @@ import java.util.HashMap
 
 class SinglePlayerMemoryGame(private val boardSize: BoardSize){
 
+    private val TAG = "SinglePlayerMemoryGame"
     val cards: List<MemoryCard>
     var numPairsFound = 0
     private var numCardFlips = 0
     private var indexOfSingleSelectedCard: Int? = null
     private var indexOfCurrentCard: Int? = null
     var score: Float = 0.0F
+    //private var boardSize: BoardSize = BoardSize.EASY
+    //private var secondsLeft = SinglePlayerActivity.remainingSecond
+    private lateinit var spActivity: SinglePlayerActivity
+    //var viewpager: CustomViewPager? = null
+
+    //val app = context.applicationContext as SandboxApp
+    //app.uploadLogs()
+
+
     private var gameTypeTag = 0 //gameTypeTage is an integer variable to denote if the game is single or multi player
     init {
         //How pictures will be selected to be displayed on the board
@@ -73,7 +85,9 @@ class SinglePlayerMemoryGame(private val boardSize: BoardSize){
         }else{
             //exactly one card previously flipped over
             //foundMatch = checkForMatch(indexOfCurrentCard!!, position)
-            score += scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
+            score += scoreCalculator(indexOfCurrentCard!!, position)
+            //scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
+            Log.i(TAG, "ScoreSPMG =  ${score}") //Log.i --> i = info
 
             indexOfCurrentCard = null
         }
@@ -81,9 +95,11 @@ class SinglePlayerMemoryGame(private val boardSize: BoardSize){
         //return score
     }
 
-    private fun scoreCalculator(position1: Int, position2: Int, gameType: Int): Float {
+
+    private fun scoreCalculator(position1: Int, position2: Int): Float{
 
         //Find a way to check the houses of the cards that are not matched
+        //var array = FloatArray(2) //the first element of array represents the if conditions below: first if 1, second else 2, last else 3
         var point: Float = 0.0F
         var house1 = cards[position1].identifier["house"]
         var house2 = cards[position2].identifier["house"]
@@ -93,19 +109,31 @@ class SinglePlayerMemoryGame(private val boardSize: BoardSize){
         var cardPoint2: Float = cards[position2].identifier["cardPoint"].toString().toFloat()
 
 
-
-        if(cards[position1].identifier != cards[position2].identifier){
-            if (house1 == house2){ //if cards do not match but from the house
+        if(cards[position1].identifier != cards[position2].identifier) {
+            if (house1 == house2){ //if cards do not match but from the same house
                 point -= ((cardPoint1 + cardPoint2)/ housePoint1 )
+
+                return point
+                //secondsLeft
+                //Log.i(TAG, "RemainingSecond =  ${spActivity.getRemainingSeconds()}") //Log.i --> i = info
+
             }else{ //if cards do not match and not from the same house
                 point -= (((cardPoint1 + cardPoint2)/2) * housePoint1 * housePoint2 )
+
+                return point
+                //Log.i(TAG, "RemainingSeconds =  ${spActivity.getRemainingSeconds()}") //Log.i --> i = info
+
             }
             //return score
         }else{ //if cards match. (i.e same card from the same house)
             point += (2*cardPoint1*housePoint1)
+
+            return point
+            //Log.i(TAG, "RemainingSeconds =  ${spActivity.getRemainingSeconds()}") //Log.i --> i = info
+
         }
 
-        return point
+        //return array
     }
     //////// GAME SCORE LOGIC UP HERE
 
