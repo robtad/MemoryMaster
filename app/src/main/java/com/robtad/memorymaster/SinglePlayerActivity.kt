@@ -1,7 +1,11 @@
 package com.robtad.memorymaster
 
+import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnPreparedListener
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -13,13 +17,14 @@ import android.view.View
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.robtad.memorymaster.models.BoardSize
-import com.robtad.memorymaster.models.MemoryCard
 import com.robtad.memorymaster.models.SinglePlayerMemoryGame
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 
@@ -45,14 +50,17 @@ class SinglePlayerActivity : AppCompatActivity()
 
     //for the countdown
     var remainingSecond: Float = 0f
-    val gameTime: Long = 45000
-    val gameTimeSeconds: Float = gameTime.toFloat()/1000
+    val gameTime: Long = 1000000
+    private val gameTimeSeconds: Float = gameTime.toFloat()/1000
     var countDownTimer: CountDownTimer? = null
     //var remainingSecond:Long = 0
     private lateinit var timerText: MenuItem
 
     //score
     private var score: Float = 0.0F
+
+    //background music
+    var backgroundSoundTrack = MediaPlayer()
 
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -65,7 +73,29 @@ class SinglePlayerActivity : AppCompatActivity()
         tvNumMoves = findViewById(R.id.tvNumMoves)
         tvNumPairs = findViewById(R.id.tvNumPairs)
 
+        //background music
+        //var rawUri: Uri = getRawUri("background_music.mp3");
+        //
+        //val uriPath = "android.resource://$packageName/raw/background_music"
+        /*
+        val uriPath = getRawUriString("background_music")
+        val uri = Uri.parse(uriPath)
+
+        //
+        backgroundSoundTrack.setDataSource(this, uri)
+        backgroundSoundTrack.prepare()
+
+         */
+        //backgroundSoundTrack.setOnPreparedListener(OnPreparedListener { backgroundSoundTrack -> backgroundSoundTrack.start() })
+        //setting up the board
+
+        //NEW CODE FOR BACKGROUND SOUNDTRACK
+
+        //
         setupBoard()
+
+
+        //backgroundSoundTrack = MediaPlayer.create(this, R.raw.background_music)
 
     }
 
@@ -92,6 +122,8 @@ class SinglePlayerActivity : AppCompatActivity()
             override fun onFinish() {
                 timerText.title = "TimeOver"
                 Snackbar.make(clRoot, "Game over!", Snackbar.LENGTH_LONG).show()
+
+                setBackgroundMusic("time_over")
                 Handler().postDelayed({
                     //setupBoard()
                     goToGameModeActivity()
@@ -171,8 +203,26 @@ class SinglePlayerActivity : AppCompatActivity()
     private fun goToGameModeActivity(){
         startActivity(Intent(this , GameModeActivity::class.java))
     }
+    fun getRawUriString(filename: String): String {
+        return "android.resource://$packageName/raw/$filename"
+        //return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + File.pathSeparator + File.separator.toString() + packageName.toString() + "/raw/" + filename)
+    }
+    private fun setBackgroundMusic(musicName:String){
+        if(backgroundSoundTrack.isPlaying){
+            backgroundSoundTrack.stop()
+            backgroundSoundTrack.reset()
+        }
+        val uriPath = getRawUriString(musicName)
+        val uri = Uri.parse(uriPath)
+        backgroundSoundTrack.setDataSource(this, uri)
+        backgroundSoundTrack.prepare()
+        backgroundSoundTrack.start()
+    }
 
     private fun setupBoard() {
+        //start background music
+        setBackgroundMusic("background_music")
+
         //starting the timer
         countDownTimer?.start()
 
@@ -237,12 +287,12 @@ class SinglePlayerActivity : AppCompatActivity()
         //Find a way to check the houses of the cards that are not matched
         //var array = FloatArray(2) //the first element of array represents the if conditions below: first if 1, second else 2, last else 3
         var point: Float = 0.0F
-        var house1 = memoryGame.cards[position1].identifier["house"]
-        var house2 = memoryGame.cards[position2].identifier["house"]
-        var housePoint1: Float = memoryGame.cards[position1].identifier["housePoint"].toString().toFloat()
-        var housePoint2: Float = memoryGame.cards[position2].identifier["housePoint"].toString().toFloat()
-        var cardPoint1: Float = memoryGame.cards[position1].identifier["cardPoint"].toString().toFloat()
-        var cardPoint2: Float = memoryGame.cards[position2].identifier["cardPoint"].toString().toFloat()
+        val house1 = memoryGame.cards[position1].identifier["house"]
+        val house2 = memoryGame.cards[position2].identifier["house"]
+        val housePoint1: Float = memoryGame.cards[position1].identifier["housePoint"].toString().toFloat()
+        val housePoint2: Float = memoryGame.cards[position2].identifier["housePoint"].toString().toFloat()
+        val cardPoint1: Float = memoryGame.cards[position1].identifier["cardPoint"].toString().toFloat()
+        val cardPoint2: Float = memoryGame.cards[position2].identifier["cardPoint"].toString().toFloat()
 
 
         if(memoryGame.cards[position1].identifier != memoryGame.cards[position2].identifier){
@@ -274,6 +324,7 @@ class SinglePlayerActivity : AppCompatActivity()
     //////// GAME SCORE LOGIC UP HERE
 
 
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     private fun updateGameWithFlip(position: Int) {
         //Error handling
         // user should not be able to flip the already matched cards and should not be able to flip over a card twice
@@ -293,9 +344,17 @@ class SinglePlayerActivity : AppCompatActivity()
 
         if(memoryGame.flipCard(position)){
             Log.i(TAG, "Found a Match! Num pairs found: ${memoryGame.numPairsFound} ")
+            setBackgroundMusic("cards_matched")
+            Handler().postDelayed({
+                //wait till the above track finishes
+                setBackgroundMusic("background_music")
+            }, 5000)
+
             //tvNumPairs.text = "Score: ${memoryGame.score}"
             if(memoryGame.haveWonGame()){
                 Snackbar.make(clRoot, "You won! Congratulations!", Snackbar.LENGTH_LONG).show()
+                setBackgroundMusic("game_won")
+
             }
         }
         //the following part executes after passing the above error checks so they are the right moves
@@ -305,10 +364,10 @@ class SinglePlayerActivity : AppCompatActivity()
         //Log.i(TAG, "SCORE =  ${memoryGame.score} ")
         score = String.format("%.2f", score).toFloat()
 
-        tvNumPairs.text = "Score: ${score}"
+        tvNumPairs.text = "Score: $score"
         //tvNumPairs.text = "Score: ${memoryGame.score}"
 
-        Log.i(TAG, "Seconds Left =  ${remainingSecond} sec ")
+        Log.i(TAG, "Seconds Left =  $remainingSecond sec ")
         Log.i(TAG, "Seconds Elapsed =  ${(gameTimeSeconds-remainingSecond)/10} sec ")
         //showing number of moves
         tvNumMoves.text = "Moves: ${memoryGame.getNumMoves()}"
