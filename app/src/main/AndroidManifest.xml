@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,10 +15,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MemoryMaster"
         tools:targetApi="31">
-
         <activity
+
             android:name=".GameModeActivity"
             android:exported="true">
+            <!--
+           android:name=".GameModeActivity"
+           android:name=".RegisterActivity"
+           -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,9 +33,12 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".SinglePlayerActivity"></activity>
-        <activity android:name=".MultiPlayerActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".SinglePlayerActivity" />
+        <activity android:name=".MultiPlayerActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".LoginMainActivity" />
+
 
 
     </application>

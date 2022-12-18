@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1081070783943",
+    "project_id": "memory-master-dc295",
+    "storage_bucket": "memory-master-dc295.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1081070783943:android:071bd9274800ac67529de2",
+        "android_client_info": {
+          "package_name": "com.robtad.memorymaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1081070783943-01cb8p4vitaaodra3knuejstfb9c2kbv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.robtad.memorymaster",
+            "certificate_hash": "87c60b621b472a7c3c86e6586a7245f8265f9caa"
+          }
+        },
+        {
+          "client_id": "1081070783943-ehln6psapihbg9njn38mb345ula8gnva.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7IdaTa0Wr_TwuXu-d5l9UEDzWY_7sGn0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1081070783943-ehln6psapihbg9njn38mb345ula8gnva.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

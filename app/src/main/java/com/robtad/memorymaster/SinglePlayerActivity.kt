@@ -50,7 +50,7 @@ class SinglePlayerActivity : AppCompatActivity()
 
     //for the countdown
     var remainingSecond: Float = 0f
-    val gameTime: Long = 10000
+    val gameTime: Long = 60000
     private val gameTimeSeconds: Float = gameTime.toFloat()/1000
     var countDownTimer: CountDownTimer? = null
     //var remainingSecond:Long = 0

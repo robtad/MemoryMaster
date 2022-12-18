@@ -20,19 +20,28 @@
         android:id="@+id/button11"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="60dp"
         android:background="#B2BCF8"
         android:gravity="center"
-        android:text="Single Player"
+        android:text="Single-Player"
         tools:ignore="TextContrastCheck" />
 
     <Button
         android:id="@+id/button12"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:background="#B2BCF8"
         android:gravity="center"
-        android:text="Multi Player"
+        android:text="Multi-Player"
+        tools:ignore="TextContrastCheck" />
+    <Button
+        android:id="@+id/button13"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:background="#B2BCF8"
+        android:gravity="center"
+        android:text="START"
         tools:ignore="TextContrastCheck" />
 </LinearLayout>
