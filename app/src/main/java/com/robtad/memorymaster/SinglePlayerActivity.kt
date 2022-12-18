@@ -50,7 +50,7 @@ class SinglePlayerActivity : AppCompatActivity()
 
     //for the countdown
     var remainingSecond: Float = 0f
-    val gameTime: Long = 1000000
+    val gameTime: Long = 10000
     private val gameTimeSeconds: Float = gameTime.toFloat()/1000
     var countDownTimer: CountDownTimer? = null
     //var remainingSecond:Long = 0
@@ -59,7 +59,7 @@ class SinglePlayerActivity : AppCompatActivity()
     //score
     private var score: Float = 0.0F
 
-    //background music
+    //for background music
     var backgroundSoundTrack = MediaPlayer()
 
 
@@ -72,30 +72,8 @@ class SinglePlayerActivity : AppCompatActivity()
         rvBoard = findViewById(R.id.rvBoard)
         tvNumMoves = findViewById(R.id.tvNumMoves)
         tvNumPairs = findViewById(R.id.tvNumPairs)
-
-        //background music
-        //var rawUri: Uri = getRawUri("background_music.mp3");
-        //
-        //val uriPath = "android.resource://$packageName/raw/background_music"
-        /*
-        val uriPath = getRawUriString("background_music")
-        val uri = Uri.parse(uriPath)
-
-        //
-        backgroundSoundTrack.setDataSource(this, uri)
-        backgroundSoundTrack.prepare()
-
-         */
-        //backgroundSoundTrack.setOnPreparedListener(OnPreparedListener { backgroundSoundTrack -> backgroundSoundTrack.start() })
         //setting up the board
-
-        //NEW CODE FOR BACKGROUND SOUNDTRACK
-
-        //
         setupBoard()
-
-
-        //backgroundSoundTrack = MediaPlayer.create(this, R.raw.background_music)
 
     }
 
@@ -133,7 +111,6 @@ class SinglePlayerActivity : AppCompatActivity()
             }
 
         }.start()
-
 
         return true
     }
@@ -203,7 +180,7 @@ class SinglePlayerActivity : AppCompatActivity()
     private fun goToGameModeActivity(){
         startActivity(Intent(this , GameModeActivity::class.java))
     }
-    fun getRawUriString(filename: String): String {
+    private fun getRawUriString(filename: String): String {
         return "android.resource://$packageName/raw/$filename"
         //return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + File.pathSeparator + File.separator.toString() + packageName.toString() + "/raw/" + filename)
     }
@@ -313,6 +290,13 @@ class SinglePlayerActivity : AppCompatActivity()
             //return score
         }else{ //if cards match. (i.e same card from the same house)
             point += (2*cardPoint1*housePoint1)*(remainingSecond/10)
+            if(!memoryGame.haveWonGame()){
+                setBackgroundMusic("cards_matched")
+                Handler().postDelayed({
+                    //wait till the above track finishes
+                    setBackgroundMusic("background_music")
+                }, 4000)
+            }
 
             return point
             //Log.i(TAG, "RemainingSeconds =  ${spActivity.getRemainingSeconds()}") //Log.i --> i = info
@@ -344,12 +328,6 @@ class SinglePlayerActivity : AppCompatActivity()
 
         if(memoryGame.flipCard(position)){
             Log.i(TAG, "Found a Match! Num pairs found: ${memoryGame.numPairsFound} ")
-            setBackgroundMusic("cards_matched")
-            Handler().postDelayed({
-                //wait till the above track finishes
-                setBackgroundMusic("background_music")
-            }, 5000)
-
             //tvNumPairs.text = "Score: ${memoryGame.score}"
             if(memoryGame.haveWonGame()){
                 Snackbar.make(clRoot, "You won! Congratulations!", Snackbar.LENGTH_LONG).show()

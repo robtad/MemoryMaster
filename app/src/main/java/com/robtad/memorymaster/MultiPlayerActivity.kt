@@ -2,6 +2,8 @@ package com.robtad.memorymaster
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -42,10 +44,12 @@ class MultiPlayerActivity : AppCompatActivity()
 
     private var boardSize: BoardSize = BoardSize.EASY
     //for the countdown
-    var gameTime: Long = 10000;
+    var gameTime: Long = 60000;
     var countDownTimer: CountDownTimer? = null
     var remainingSecond:Long = 0
     private lateinit var timerText: MenuItem
+    //for background music
+    var backgroundSoundTrack = MediaPlayer()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?)
@@ -99,12 +103,8 @@ class MultiPlayerActivity : AppCompatActivity()
         return true
     }
 
-    private fun goToGameModePage() {
 
-        startActivity(Intent(this , GameModeActivity::class.java))
-
-    }
-    fun pauseCountDown() {
+    private fun pauseCountDown() {
         countDownTimer?.cancel()
     }
 
@@ -169,13 +169,32 @@ class MultiPlayerActivity : AppCompatActivity()
                 countDownTimer?.start()
             }.show()
     }
+    private fun goToGameModeActivity(){
+        startActivity(Intent(this , GameModeActivity::class.java))
+    }
+    private fun getRawUriString(filename: String): String {
+        return "android.resource://$packageName/raw/$filename"
+        //return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + File.pathSeparator + File.separator.toString() + packageName.toString() + "/raw/" + filename)
+    }
+    private fun setBackgroundMusic(musicName:String){
+        if(backgroundSoundTrack.isPlaying){
+            backgroundSoundTrack.stop()
+            backgroundSoundTrack.reset()
+        }
+        val uriPath = getRawUriString(musicName)
+        val uri = Uri.parse(uriPath)
+        backgroundSoundTrack.setDataSource(this, uri)
+        backgroundSoundTrack.prepare()
+        backgroundSoundTrack.start()
+    }
 
 
     private fun setupBoard() {
-
         //resetting the text view at the bottom (moves and score) depending on the board size
 
-        //gameTime = 60000
+        //start background music
+        setBackgroundMusic("background_music")
+
         //starting the timer
         countDownTimer?.start()
 
