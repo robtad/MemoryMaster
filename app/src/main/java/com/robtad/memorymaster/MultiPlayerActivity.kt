@@ -43,6 +43,11 @@ class MultiPlayerActivity : AppCompatActivity()
     private lateinit  var memoryGame: MultiPlayerMemoryGame
 
     private var boardSize: BoardSize = BoardSize.EASY
+    //score related
+    private var indexOfCurrentCard: Int? = null
+    var playerFlag = 0
+    var score1: Float = 0.0F //player1 score
+    var score2: Float = 0.0F //player2 score
     //for the countdown
     var gameTime: Long = 60000;
     var countDownTimer: CountDownTimer? = null
@@ -90,9 +95,12 @@ class MultiPlayerActivity : AppCompatActivity()
             override fun onFinish() {
                 timerText.title = "TimeOver"
                 Snackbar.make(clRoot, "Game over!", Snackbar.LENGTH_LONG).show()
+
+                setBackgroundMusic("time_over")
                 Handler().postDelayed({
-                    setupBoard()
-                }, 5000)
+                    //setupBoard()
+                    goToGameModeActivity()
+                }, 3800)
 
                 //setupBoard()
             }
@@ -232,6 +240,70 @@ class MultiPlayerActivity : AppCompatActivity()
 
     }
 
+    ///////// GAME SCORE LOGIC HERE
+    fun displayScore(position: Int)  {
+
+
+        if(indexOfCurrentCard == null){
+            //0 or 2 cards previously flipped over
+            indexOfCurrentCard = position
+
+        }else{
+            //exactly one card previously flipped over
+            //foundMatch = checkForMatch(indexOfCurrentCard!!, position)
+            playerFlag++
+            if (playerFlag % 2 != 0){// ---> turn of the first player
+                score1 += scoreCalculator(indexOfCurrentCard!!, position)
+            }
+            else{//playerFlag % 2 == 0 ---> turn of the second player
+                score2 += scoreCalculator(indexOfCurrentCard!!, position)
+            }
+            //score += scoreCalculator(indexOfCurrentCard!!, position, gameTypeTag)
+
+            indexOfCurrentCard = null
+        }
+
+        //return score
+    }
+
+    private fun scoreCalculator(position1: Int, position2: Int): Float {
+
+        //Find a way to check the houses of the cards that are not matched
+        var point: Float = 0.0F
+        var house1 = memoryGame.cards[position1].identifier["house"]
+        var house2 = memoryGame.cards[position2].identifier["house"]
+        var housePoint1: Float = memoryGame.cards[position1].identifier["housePoint"].toString().toFloat()
+        var housePoint2: Float = memoryGame.cards[position2].identifier["housePoint"].toString().toFloat()
+        var cardPoint1: Float = memoryGame.cards[position1].identifier["cardPoint"].toString().toFloat()
+        var cardPoint2: Float = memoryGame.cards[position2].identifier["cardPoint"].toString().toFloat()
+
+
+
+        if(memoryGame.cards[position1].identifier != memoryGame.cards[position2].identifier){
+            if (house1 == house2){ //if cards do not match but from the house
+                point -= ((cardPoint1 + cardPoint2)/ housePoint1 )
+            }else{ //if cards do not match and not from the same house
+                point -= (((cardPoint1 + cardPoint2)/2) * housePoint1 * housePoint2 )
+            }
+            //return score
+        }else{ //if cards match. (i.e same card from the same house)
+            point += (2*cardPoint1*housePoint1)
+            //alert with background music
+            if(!memoryGame.haveWonGame()){
+                setBackgroundMusic("cards_matched")
+                Handler().postDelayed({
+                    //wait till the above track finishes
+                    setBackgroundMusic("background_music")
+                }, 3800)
+            }
+
+        }
+
+        return point
+    }
+    //////// GAME SCORE LOGIC UP HERE
+
+
 
     private fun updateGameWithFlip(position: Int) {
         //Error handling
@@ -258,8 +330,10 @@ class MultiPlayerActivity : AppCompatActivity()
             if(memoryGame.haveWonGame()){
                 if(memoryGame.score1 > memoryGame.score2){
                     Snackbar.make(clRoot, "Player1 Won! Congratulations!", Snackbar.LENGTH_LONG).show()
+                    setBackgroundMusic("game_won")
                 }else if (memoryGame.score2 > memoryGame.score1){
                     Snackbar.make(clRoot, "Player2 Won! Congratulations!", Snackbar.LENGTH_LONG).show()
+                    setBackgroundMusic("game_won")
                 }else {
                     Snackbar.make(clRoot, "It's a draw!", Snackbar.LENGTH_LONG).show()
                 }
@@ -268,9 +342,11 @@ class MultiPlayerActivity : AppCompatActivity()
         //the following part executes after passing the above error checks so they are the right moves
         //displaying game score on every move
         memoryGame.displayScore(position)//this calculates game score after each move
+        displayScore(position)//this calculates game score after each move
+
         Log.i(TAG, "MOVE SCORE =  ${memoryGame.score1}, ${memoryGame.score2} ")
-        tvNumMoves.text = "Score1: ${memoryGame.score1}"
-        tvNumPairs.text = "Score2: ${memoryGame.score2}"
+        tvNumMoves.text = "Score1: $score1"
+        tvNumPairs.text = "Score2: $score2"
 
 
         //showing number of moves

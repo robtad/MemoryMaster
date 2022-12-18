@@ -295,7 +295,7 @@ class SinglePlayerActivity : AppCompatActivity()
                 Handler().postDelayed({
                     //wait till the above track finishes
                     setBackgroundMusic("background_music")
-                }, 4000)
+                }, 3800)
             }
 
             return point
