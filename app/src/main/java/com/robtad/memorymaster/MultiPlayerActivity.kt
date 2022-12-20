@@ -143,6 +143,10 @@ class MultiPlayerActivity : AppCompatActivity()
                 startActivity(Intent(this , GameModeActivity::class.java))
                 return true
             }
+            R.id.mi_pauseStart->{
+                stopStartBackgroundMusic()
+
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -207,6 +211,14 @@ class MultiPlayerActivity : AppCompatActivity()
         }
     }
 
+    private fun stopStartBackgroundMusic(){
+        if(backgroundSoundTrack.isPlaying){
+            backgroundSoundTrack.stop()
+            backgroundSoundTrack.reset()
+        }else{
+            setBackgroundMusic("background_music")
+        }
+    }
     private fun setupBoard() {
         //resetting the text view at the bottom (moves and score) depending on the board size
 
@@ -341,9 +353,17 @@ class MultiPlayerActivity : AppCompatActivity()
                 if(memoryGame.score1 > memoryGame.score2){
                     Snackbar.make(clRoot, "Player1 Won! Congratulations!", Snackbar.LENGTH_LONG).show()
                     setBackgroundMusic("game_won")
+                    Handler().postDelayed({
+                        stopBackgroundMusic()
+                    }, 7000)
+
                 }else if (memoryGame.score2 > memoryGame.score1){
                     Snackbar.make(clRoot, "Player2 Won! Congratulations!", Snackbar.LENGTH_LONG).show()
                     setBackgroundMusic("game_won")
+                    Handler().postDelayed({
+                        stopBackgroundMusic()
+                    }, 7000)
+
                 }else {
                     Snackbar.make(clRoot, "It's a draw!", Snackbar.LENGTH_LONG).show()
                 }

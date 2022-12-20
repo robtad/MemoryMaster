@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/mi_pauseStart"
+        android:icon="@drawable/ic_pause_start"
+        android:title="ps"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/mi_count_down"
         android:title="Timer"
         app:showAsAction="always" />

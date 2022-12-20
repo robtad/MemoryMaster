@@ -78,7 +78,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onStart()
 
         if (firebaseAuth.currentUser != null) {
-            val intent = Intent(this, LoginMainActivity::class.java)
+            val intent = Intent(this, GameModeActivity::class.java)
             startActivity(intent)
         }
     }

@@ -39,12 +39,20 @@
         android:id="@+id/button13"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="100dp"
         android:background="#B2BCF8"
         android:gravity="center"
         android:text="START"
         tools:ignore="TextContrastCheck" />
-
+    <Button
+        android:id="@+id/buttonLogout"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background= "#FF00"
+        android:gravity="center"
+        android:text="logout"
+        tools:ignore="TextContrastCheck" />
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"

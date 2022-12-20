@@ -143,6 +143,11 @@ class SinglePlayerActivity : AppCompatActivity()
                 startActivity(Intent(this , GameModeActivity::class.java))
                 return true
             }
+            //pause the background track
+            R.id.mi_pauseStart->{
+                stopStartBackgroundMusic()
+
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -204,6 +209,14 @@ class SinglePlayerActivity : AppCompatActivity()
         if(backgroundSoundTrack.isPlaying){
             backgroundSoundTrack.stop()
             backgroundSoundTrack.reset()
+        }
+    }
+    private fun stopStartBackgroundMusic(){
+        if(backgroundSoundTrack.isPlaying){
+            backgroundSoundTrack.stop()
+            backgroundSoundTrack.reset()
+        }else{
+            setBackgroundMusic("background_music")
         }
     }
     fun writeToFile(){
@@ -322,8 +335,8 @@ class SinglePlayerActivity : AppCompatActivity()
                 setBackgroundMusic("cards_matched")
                 Handler().postDelayed({
                     //wait till the above track finishes
-                    //setBackgroundMusic("background_music")
-                    stopBackgroundMusic()
+                    setBackgroundMusic("background_music")
+                    //stopBackgroundMusic()
                 }, 3800)
             }
 
@@ -361,6 +374,10 @@ class SinglePlayerActivity : AppCompatActivity()
             if(memoryGame.haveWonGame()){
                 Snackbar.make(clRoot, "You won! Congratulations!", Snackbar.LENGTH_LONG).show()
                 setBackgroundMusic("game_won")
+                Handler().postDelayed({
+                    stopBackgroundMusic()
+                }, 7000)
+
 
             }
         }

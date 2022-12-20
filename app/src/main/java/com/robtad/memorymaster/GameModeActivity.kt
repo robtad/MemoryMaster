@@ -12,10 +12,12 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.robtad.memorymaster.models.BoardSize
 import com.robtad.memorymaster.models.SinglePlayerMemoryGame
@@ -31,12 +33,13 @@ class GameModeActivity() : AppCompatActivity() {
     private lateinit var buttonSingle: Button
     private  lateinit var buttonMulti: Button
     private lateinit var buttonStart: Button
+    private lateinit var buttonLogout: Button
     private lateinit var img: ImageView
     private val TAG = "GameModeActivity"
     private lateinit var clRoot: ConstraintLayout
     private var boardSize: BoardSize = BoardSize.EASY
 
-
+    private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     /*
@@ -71,8 +74,19 @@ class GameModeActivity() : AppCompatActivity() {
         buttonSingle = findViewById(R.id.button11)
         buttonMulti = findViewById(R.id.button12)
         buttonStart = findViewById(R.id.button13)
+        buttonLogout = findViewById(R.id.buttonLogout)
+        firebaseAuth = FirebaseAuth.getInstance()
 
         buttonStart.isEnabled = false
+
+        buttonLogout.setOnClickListener {
+            firebaseAuth.signOut()
+            Toast.makeText(this, "Sign Out Successfully!", Toast.LENGTH_SHORT).show()
+            startActivity(
+                Intent(this, LoginActivity::class.java)
+            )
+            finish()
+        }
 
         buttonSingle.setOnClickListener {
             gameMode = 1
@@ -176,7 +190,7 @@ fun showSnackbar(view: View) {
                     card.put("bitmap", decoderBase64(image))
                     //                    card["bitmap"] = decoderBase64(card["image"].toString())
                     ListsHolder.DEFAULT_ICONS_GRYFFINDOR.add(card)
-                    Log.i(TAG, "From Gryffindorlist qwerty =  ${ListsHolder.DEFAULT_ICONS_GRYFFINDOR[0]}") //Log.i --> i = info
+                    //Log.i(TAG, "From Gryffindorlist qwerty =  ${ListsHolder.DEFAULT_ICONS_GRYFFINDOR[0]}") //Log.i --> i = info
 
                 }
                 for (cardSnapshot in dataSnapshot.child("hufflepuff").children) {

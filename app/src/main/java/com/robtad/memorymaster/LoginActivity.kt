@@ -50,7 +50,9 @@ class LoginActivity : AppCompatActivity() {
                 firebaseAuth.signInWithEmailAndPassword(email, pass)
                     .addOnCompleteListener {
                         if (it.isSuccessful){
-                            val intent = Intent(this, LoginMainActivity::class.java)
+                            //val intent = Intent(this, LoginMainActivity::class.java)
+                            val intent = Intent(this, GameModeActivity::class.java)
+
                             startActivity(intent)
                         }else{
                             Toast.makeText(this, it.exception!!.message.toString(), Toast.LENGTH_SHORT).show()
@@ -64,11 +66,11 @@ class LoginActivity : AppCompatActivity() {
 
     private fun resetMyPass(email : EditText) {
         if (email.text.toString().isEmpty()) {
-            Toast.makeText(this, "You haven't write your Email", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You haven't written your Email", Toast.LENGTH_SHORT).show()
             return
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()){
-            Toast.makeText(this, "It seems like not an Email address :)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "It seems like not valid email address :)", Toast.LENGTH_SHORT).show()
             return
         }
         firebaseAuth.sendPasswordResetEmail(email.text.toString())

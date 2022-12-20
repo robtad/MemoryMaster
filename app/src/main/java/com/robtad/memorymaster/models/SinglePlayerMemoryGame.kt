@@ -57,7 +57,7 @@ class SinglePlayerMemoryGame(private val boardSize: BoardSize){
         randomizedImages = randomizedImages.shuffled() //cards that are going to be displayed can be printed from here
 
         cards = randomizedImages.map { MemoryCard(it) }
-        Log.i(TAG, "CARDS inside init =  $cards") //Log.i --> i = info
+        //Log.i(TAG, "CARDS inside init =  $cards") //Log.i --> i = info
 
     }
 
