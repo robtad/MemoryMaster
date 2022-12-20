@@ -6,12 +6,16 @@ import android.os.Bundle
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.robtad.memorymaster.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +23,8 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         firebaseAuth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+        databaseReference = database?.reference!!.child("users")
 
         binding.textView.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
@@ -37,17 +43,23 @@ class RegisterActivity : AppCompatActivity() {
                         .addOnCompleteListener {
                             if (it.isSuccessful){
                                 val user = firebaseAuth.currentUser
+                                val userDb = databaseReference?.child(user?.uid!!)
+
+                                userDb?.child("id")?.setValue(user?.uid)
+                                userDb?.child("name")?.setValue(name)
+                                userDb?.child("email")?.setValue(email)
+                                userDb?.child("password")?.setValue(pass)
+
                                 val profileUpdates = UserProfileChangeRequest.Builder()
                                     .setDisplayName(name)
                                     .build()
                                 user?.updateProfile(profileUpdates)
-                                    ?.addOnCompleteListener {
-                                        if (it.isSuccessful) {
+                                    ?.addOnCompleteListener { nameUpdated ->
+                                        if (nameUpdated.isSuccessful) {
                                             val intent = Intent(this, LoginActivity::class.java)
                                             startActivity(intent)
                                         } else {
-                                            Toast.makeText(this, it.exception!!.message.toString(), Toast.LENGTH_SHORT).show()
-                                        }
+                                            Toast.makeText(this, nameUpdated.exception!!.message.toString(), Toast.LENGTH_SHORT).show()                                        }
                                     }
                             }else{
                                 Toast.makeText(this, it.exception!!.message.toString(), Toast.LENGTH_SHORT).show()

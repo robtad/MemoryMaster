@@ -1,6 +1,7 @@
 package com.robtad.memorymaster
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,7 +73,11 @@ class MemoryBoardAdapter(
 
         fun bind(position: Int) {
             val memoryCard: MemoryCard = cards[position]
-            imageButton.setImageResource((if (memoryCard.isFaceUp) memoryCard.identifier["image"] else R.drawable.backface) as Int)
+            //val bitmap = memoryCard.identifier["image"]
+            if (memoryCard.isFaceUp)
+                imageButton.setImageBitmap(memoryCard.identifier["bitmap"] as Bitmap?)
+            else
+                imageButton.setImageResource(R.drawable.backface as Int)
 
             //gray out the images that are matched to give user visual indication: next 3 lines
             imageButton.alpha = if(memoryCard.isMatched) .4f else 1.0f

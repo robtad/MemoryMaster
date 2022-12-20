@@ -1,3 +1,4 @@
+/*
 package com.robtad.memorymaster
 
 import androidx.appcompat.app.AppCompatActivity
@@ -17,10 +18,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.robtad.memorymaster.models.BoardSize
 import com.robtad.memorymaster.models.MemoryCard
 import com.robtad.memorymaster.models.MemoryGame
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
 
 class MainActivity : AppCompatActivity()
 {
@@ -189,4 +190,6 @@ class MainActivity : AppCompatActivity()
     }
 
 
-}
+
+
+}*/

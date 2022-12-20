@@ -3,10 +3,15 @@ package com.robtad.memorymaster.models
 import android.util.Log
 import com.robtad.memorymaster.GameModeActivity
 import com.robtad.memorymaster.SinglePlayerActivity
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
+import com.robtad.memorymaster.utils.list1
+import com.robtad.memorymaster.utils.list2
+import com.robtad.memorymaster.utils.list3
+import com.robtad.memorymaster.utils.list4
+
 import java.util.HashMap
 
 class SinglePlayerMemoryGame(private val boardSize: BoardSize){
@@ -21,6 +26,9 @@ class SinglePlayerMemoryGame(private val boardSize: BoardSize){
     //private var boardSize: BoardSize = BoardSize.EASY
     //private var secondsLeft = SinglePlayerActivity.remainingSecond
     private lateinit var spActivity: SinglePlayerActivity
+    private lateinit  var gameMode: GameModeActivity
+
+
     //var viewpager: CustomViewPager? = null
 
     //val app = context.applicationContext as SandboxApp
@@ -28,26 +36,32 @@ class SinglePlayerMemoryGame(private val boardSize: BoardSize){
 
 
     private var gameTypeTag = 0 //gameTypeTage is an integer variable to denote if the game is single or multi player
+    private var randomizedImages: List<HashMap<String, out Any>>
     init {
-        //How pictures will be selected to be displayed on the board
-        val chosenImagesGryffindor: List<HashMap<String, out Any>> = DEFAULT_ICONS_GRYFFINDOR.shuffled().take(boardSize.getNumPairs()/4)
+
+        val chosenImagesGryffindor: List<HashMap<String, out Any>> = list1.shuffled().take(boardSize.getNumPairs()/4)
+        //Log.i(TAG, "From Gryffindorlist =  ${list1[0]}") //Log.i --> i = info
+
         val randomizedImagesGryffindor: List<HashMap<String, out Any>> = (chosenImagesGryffindor + chosenImagesGryffindor).shuffled()
 
-        val chosenImagesHufflepuff: List<HashMap<String, out Any>> = DEFAULT_ICONS_HUFFLEPUFF.shuffled().take(boardSize.getNumPairs()/4)
+        val chosenImagesHufflepuff: List<HashMap<String, out Any>> = list2.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesHufflepuff: List<HashMap<String, out Any>> = (chosenImagesHufflepuff + chosenImagesHufflepuff).shuffled()
 
-        val chosenImagesRavenclaw: List<HashMap<String, out Any>> = DEFAULT_ICONS_RAVENCLAW.shuffled().take(boardSize.getNumPairs()/4)
+        val chosenImagesRavenclaw: List<HashMap<String, out Any>> = list3.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesRavenclaw: List<HashMap<String, out Any>> = (chosenImagesRavenclaw + chosenImagesRavenclaw).shuffled()
 
-        val chosenImagesSlytherin: List<HashMap<String, out Any>> = DEFAULT_ICONS_SLYTHERIN.shuffled().take(boardSize.getNumPairs()/4)
+        val chosenImagesSlytherin: List<HashMap<String, out Any>> = list4.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesSlytherin: List<HashMap<String, out Any>> = (chosenImagesSlytherin + chosenImagesSlytherin).shuffled()
 
-        var randomizedImages = randomizedImagesGryffindor + randomizedImagesHufflepuff + randomizedImagesRavenclaw + randomizedImagesSlytherin
-        randomizedImages = randomizedImages.shuffled()
+        randomizedImages = randomizedImagesGryffindor + randomizedImagesHufflepuff + randomizedImagesRavenclaw + randomizedImagesSlytherin
+        randomizedImages = randomizedImages.shuffled() //cards that are going to be displayed can be printed from here
 
         cards = randomizedImages.map { MemoryCard(it) }
+        Log.i(TAG, "CARDS inside init =  $cards") //Log.i --> i = info
+
     }
 
+    //to print contents of cards on the board
 
     fun flipCard(position: Int) : Boolean{
         numCardFlips++

@@ -2,6 +2,7 @@ package com.robtad.memorymaster
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.media.MediaPlayer.OnPreparedListener
@@ -25,13 +26,14 @@ import com.google.android.material.snackbar.Snackbar
 import com.robtad.memorymaster.models.BoardSize
 import com.robtad.memorymaster.models.SinglePlayerMemoryGame
 import java.io.File
+import java.io.FileWriter
 import java.util.concurrent.TimeUnit
 
 
 class SinglePlayerActivity : AppCompatActivity()
 {
 
-
+    private lateinit  var gameMode: GameModeActivity
 
     private val TAG = "SinglePlayerActivity"
 
@@ -104,8 +106,9 @@ class SinglePlayerActivity : AppCompatActivity()
                 setBackgroundMusic("time_over")
                 Handler().postDelayed({
                     //setupBoard()
+                    stopBackgroundMusic()
                     goToGameModeActivity()
-                }, 5000)
+                }, 3000)
 
                 //setupBoard()
             }
@@ -135,6 +138,8 @@ class SinglePlayerActivity : AppCompatActivity()
             }
             //Going back to Game mode selection page
             R.id.mi_back_arrow -> {
+                countDownTimer?.cancel()
+                stopBackgroundMusic()
                 startActivity(Intent(this , GameModeActivity::class.java))
                 return true
             }
@@ -195,7 +200,29 @@ class SinglePlayerActivity : AppCompatActivity()
         backgroundSoundTrack.prepare()
         backgroundSoundTrack.start()
     }
+    private fun stopBackgroundMusic(){
+        if(backgroundSoundTrack.isPlaying){
+            backgroundSoundTrack.stop()
+            backgroundSoundTrack.reset()
+        }
+    }
+    fun writeToFile(){
+        val fileName = "C:/Users/RobTad/Documents/KotlinAppsDemo/Resources/my_file.txt"
+        val string = "This is the content of my file"
 
+        try {
+            val fileOutputStream = openFileOutput(fileName, Context.MODE_PRIVATE)
+            fileOutputStream.write(string.toByteArray())
+            fileOutputStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        /*
+        var fo = FileWriter("temp.txt")
+        fo.write("test")
+        fo.close()
+        */
+    }
     private fun setupBoard() {
         //start background music
         setBackgroundMusic("background_music")
@@ -234,7 +261,8 @@ class SinglePlayerActivity : AppCompatActivity()
         rvBoard.adapter = adapter
         rvBoard.setHasFixedSize(true) //not must, but important for efficiency: makes the size of the recycler view determined on the app boot up
         rvBoard.layoutManager = GridLayoutManager(this,boardSize.getWidth())
-
+        //
+        //writeToFile()
     }
 
 ///
@@ -294,7 +322,8 @@ class SinglePlayerActivity : AppCompatActivity()
                 setBackgroundMusic("cards_matched")
                 Handler().postDelayed({
                     //wait till the above track finishes
-                    setBackgroundMusic("background_music")
+                    //setBackgroundMusic("background_music")
+                    stopBackgroundMusic()
                 }, 3800)
             }
 

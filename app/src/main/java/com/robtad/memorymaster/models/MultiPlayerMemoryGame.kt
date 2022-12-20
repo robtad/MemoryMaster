@@ -1,14 +1,20 @@
 package com.robtad.memorymaster.models
 
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
+//import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
 import com.robtad.memorymaster.GameModeActivity
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_GRYFFINDOR
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
-import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
-import java.util.HashMap
+import com.robtad.memorymaster.utils.list1
+import com.robtad.memorymaster.utils.list2
+import com.robtad.memorymaster.utils.list3
+import com.robtad.memorymaster.utils.list4
+
 
 class MultiPlayerMemoryGame(private val boardSize: BoardSize){
 
+    private lateinit var gameMode: GameModeActivity
+    //var gameMode: Intent = Intent(this@MultiPlayerMemoryGame, GameModeActivity::class.java)
     val cards: List<MemoryCard>
     var numPairsFound = 0
     private var numCardFlips = 0
@@ -20,16 +26,16 @@ class MultiPlayerMemoryGame(private val boardSize: BoardSize){
     private var gameTypeTag = 0 //gameTypeTage is an integer variable to denote if the game is single or multi player
     init {
         //How pictures will be selected to be displayed on the board
-        val chosenImagesGryffindor: List<HashMap<String, out Any>> = DEFAULT_ICONS_GRYFFINDOR.shuffled().take(boardSize.getNumPairs()/4)
+        val chosenImagesGryffindor: List<HashMap<String, out Any>> = list1.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesGryffindor: List<HashMap<String, out Any>> = (chosenImagesGryffindor + chosenImagesGryffindor).shuffled()
 
-        val chosenImagesHufflepuff: List<HashMap<String, out Any>> = DEFAULT_ICONS_HUFFLEPUFF.shuffled().take(boardSize.getNumPairs()/4)
+        val chosenImagesHufflepuff: List<HashMap<String, out Any>> = list2.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesHufflepuff: List<HashMap<String, out Any>> = (chosenImagesHufflepuff + chosenImagesHufflepuff).shuffled()
 
-        val chosenImagesRavenclaw: List<HashMap<String, out Any>> = DEFAULT_ICONS_RAVENCLAW.shuffled().take(boardSize.getNumPairs()/4)
+        val chosenImagesRavenclaw: List<HashMap<String, out Any>> = list3.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesRavenclaw: List<HashMap<String, out Any>> = (chosenImagesRavenclaw + chosenImagesRavenclaw).shuffled()
 
-        val chosenImagesSlytherin: List<HashMap<String, out Any>> = DEFAULT_ICONS_SLYTHERIN.shuffled().take(boardSize.getNumPairs()/4)
+        val chosenImagesSlytherin: List<HashMap<String, out Any>> = list4.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesSlytherin: List<HashMap<String, out Any>> = (chosenImagesSlytherin + chosenImagesSlytherin).shuffled()
 
         var randomizedImages = randomizedImagesGryffindor + randomizedImagesHufflepuff + randomizedImagesRavenclaw + randomizedImagesSlytherin

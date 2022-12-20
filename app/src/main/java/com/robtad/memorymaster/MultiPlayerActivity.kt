@@ -99,6 +99,7 @@ class MultiPlayerActivity : AppCompatActivity()
                 setBackgroundMusic("time_over")
                 Handler().postDelayed({
                     //setupBoard()
+                    stopBackgroundMusic()
                     goToGameModeActivity()
                 }, 3800)
 
@@ -136,6 +137,9 @@ class MultiPlayerActivity : AppCompatActivity()
             }
             //Going back to Game mode selection page
             R.id.mi_back_arrow -> {
+                //stopBackgroundMusic()
+                countDownTimer?.cancel()
+                stopBackgroundMusic()
                 startActivity(Intent(this , GameModeActivity::class.java))
                 return true
             }
@@ -196,6 +200,12 @@ class MultiPlayerActivity : AppCompatActivity()
         backgroundSoundTrack.start()
     }
 
+    private fun stopBackgroundMusic(){
+        if(backgroundSoundTrack.isPlaying){
+            backgroundSoundTrack.stop()
+            backgroundSoundTrack.reset()
+        }
+    }
 
     private fun setupBoard() {
         //resetting the text view at the bottom (moves and score) depending on the board size
