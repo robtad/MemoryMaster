@@ -220,7 +220,7 @@ class SinglePlayerActivity : AppCompatActivity()
         }
     }
     fun writeToFile(){
-        val fileName = "C:/Users/RobTad/Documents/KotlinAppsDemo/Resources/my_file.txt"
+        val fileName = "my_file.txt"
         val string = "This is the content of my file"
 
         try {
