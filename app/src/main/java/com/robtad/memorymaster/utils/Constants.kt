@@ -27,7 +27,7 @@ val DEFAULT_ICONS_GRYFFINDOR = listOf(
 
     )
 val DEFAULT_ICONS_HUFFLEPUFF = listOf(
-    hashMapOf("image" to R.drawable.ic_h0, "house" to "Hufflepuff", "card" to "cd", "housePoint" to 1, "cardPoint" to 18),
+    hashMapOf("image" to R.drawable.ic_h0, "house" to "Hufflepuff", "card" to "CD", "housePoint" to 1, "cardPoint" to 18),
     hashMapOf("image" to R.drawable.ic_h1, "house" to "Hufflepuff", "card" to "TL", "housePoint" to 1, "cardPoint" to 10),
     hashMapOf("image" to R.drawable.ic_h2, "house" to "Hufflepuff", "card" to "EM", "housePoint" to 1, "cardPoint" to 5),
     hashMapOf("image" to R.drawable.ic_h3, "house" to "Hufflepuff", "card" to "FF", "housePoint" to 1, "cardPoint" to 12),

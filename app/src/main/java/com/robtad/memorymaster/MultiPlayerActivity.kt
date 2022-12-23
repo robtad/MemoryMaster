@@ -247,7 +247,7 @@ class MultiPlayerActivity : AppCompatActivity()
         //resetting the text view at the bottom (moves and score) depending on the board size
 
 
-        memoryGame = MultiPlayerMemoryGame(boardSize)
+        memoryGame = MultiPlayerMemoryGame(boardSize, this)
 
         adapter = MemoryBoardAdapter(this, boardSize, memoryGame.cards, object: MemoryBoardAdapter.CardClickListener{
             override fun onCardClicked(position: Int) {
@@ -292,12 +292,17 @@ class MultiPlayerActivity : AppCompatActivity()
 
         //Find a way to check the houses of the cards that are not matched
         var point: Float = 0.0F
-        var house1 = memoryGame.cards[position1].identifier["house"]
-        var house2 = memoryGame.cards[position2].identifier["house"]
-        var housePoint1: Float = memoryGame.cards[position1].identifier["housePoint"].toString().toFloat()
-        var housePoint2: Float = memoryGame.cards[position2].identifier["housePoint"].toString().toFloat()
-        var cardPoint1: Float = memoryGame.cards[position1].identifier["cardPoint"].toString().toFloat()
-        var cardPoint2: Float = memoryGame.cards[position2].identifier["cardPoint"].toString().toFloat()
+        val house1 = memoryGame.cards[position1].identifier["house"]
+        val house2 = memoryGame.cards[position2].identifier["house"]
+        val housePoint1: Float = memoryGame.cards[position1].identifier["housePoint"].toString().toFloat()
+        val housePoint2: Float = memoryGame.cards[position2].identifier["housePoint"].toString().toFloat()
+        val cardPoint1: Float = memoryGame.cards[position1].identifier["cardPoint"].toString().toFloat()
+        val cardPoint2: Float = memoryGame.cards[position2].identifier["cardPoint"].toString().toFloat()
+        val cardName: String = memoryGame.cards[position1].identifier["card"].toString()
+        val cardName2: String = memoryGame.cards[position2].identifier["card"].toString()
+
+        //val cardName = memoryGame.cards[position1].identifier["card"]
+
 
 
 
@@ -311,7 +316,19 @@ class MultiPlayerActivity : AppCompatActivity()
         }else{ //if cards match. (i.e same card from the same house)
             point += (2*cardPoint1*housePoint1)
             //alert with background music
-            if(!memoryGame.haveWonGame()){
+            //If Cedric Diggory is matched play "sth in the way"
+
+            if(cardName == "CD" || cardName2 == "CD"){
+                setBackgroundMusic("sth_in_the_way")
+                Handler().postDelayed({
+                    //wait till the above track finishes
+                    setBackgroundMusic("background_music")
+                    //stopBackgroundMusic()
+                }, 8000)
+            }
+
+
+            else if(!memoryGame.haveWonGame()){
                 setBackgroundMusic("cards_matched")
                 Handler().postDelayed({
                     //wait till the above track finishes
@@ -350,24 +367,22 @@ class MultiPlayerActivity : AppCompatActivity()
             Log.i(TAG, "Found a Match! Num pairs found: ${memoryGame.numPairsFound} ")
             //tvNumPairs.text = "Score: ${memoryGame.score}"
             if(memoryGame.haveWonGame()){
+                setBackgroundMusic("game_won")
+                Handler().postDelayed({
+                    stopBackgroundMusic()
+                }, 6000)
                 if(memoryGame.score1 > memoryGame.score2){
                     Snackbar.make(clRoot, "Player1 Won! Congratulations!", Snackbar.LENGTH_LONG).show()
-                    setBackgroundMusic("game_won")
-                    Handler().postDelayed({
-                        stopBackgroundMusic()
-                    }, 7000)
+
 
                 }else if (memoryGame.score2 > memoryGame.score1){
                     Snackbar.make(clRoot, "Player2 Won! Congratulations!", Snackbar.LENGTH_LONG).show()
-                    setBackgroundMusic("game_won")
-                    Handler().postDelayed({
-                        stopBackgroundMusic()
-                    }, 7000)
 
                 }else {
                     Snackbar.make(clRoot, "It's a draw!", Snackbar.LENGTH_LONG).show()
                 }
             }
+
         }
         //the following part executes after passing the above error checks so they are the right moves
         //displaying game score on every move

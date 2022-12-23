@@ -52,7 +52,7 @@ class SinglePlayerActivity : AppCompatActivity()
 
     //for the countdown
     var remainingSecond: Float = 0f
-    val gameTime: Long = 60000
+    val gameTime: Long = 45000
     private val gameTimeSeconds: Float = gameTime.toFloat()/1000
     var countDownTimer: CountDownTimer? = null
     //var remainingSecond:Long = 0
@@ -219,24 +219,9 @@ class SinglePlayerActivity : AppCompatActivity()
             setBackgroundMusic("background_music")
         }
     }
-    fun writeToFile(){
-        val fileName = "my_file.txt"
-        val string = "This is the content of my file"
 
-        try {
-            val fileOutputStream = openFileOutput(fileName, Context.MODE_PRIVATE)
-            fileOutputStream.write(string.toByteArray())
-            fileOutputStream.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        /*
-        var fo = FileWriter("temp.txt")
-        fo.write("test")
-        fo.close()
-        */
-    }
     private fun setupBoard() {
+
         //start background music
         setBackgroundMusic("background_music")
 
@@ -262,7 +247,7 @@ class SinglePlayerActivity : AppCompatActivity()
         //resetting the text view at the bottom (moves and score) depending on the board size
 
 
-        memoryGame = SinglePlayerMemoryGame(boardSize)
+        memoryGame = SinglePlayerMemoryGame(boardSize, this)
 
         adapter = MemoryBoardAdapter(this, boardSize, memoryGame.cards, object: MemoryBoardAdapter.CardClickListener{
             override fun onCardClicked(position: Int) {
@@ -311,6 +296,9 @@ class SinglePlayerActivity : AppCompatActivity()
         val housePoint2: Float = memoryGame.cards[position2].identifier["housePoint"].toString().toFloat()
         val cardPoint1: Float = memoryGame.cards[position1].identifier["cardPoint"].toString().toFloat()
         val cardPoint2: Float = memoryGame.cards[position2].identifier["cardPoint"].toString().toFloat()
+        // to catch Cedric Diggory
+        val cardName: String = memoryGame.cards[position1].identifier["card"].toString()
+        val cardName2: String = memoryGame.cards[position2].identifier["card"].toString()
 
 
         if(memoryGame.cards[position1].identifier != memoryGame.cards[position2].identifier){
@@ -331,7 +319,16 @@ class SinglePlayerActivity : AppCompatActivity()
             //return score
         }else{ //if cards match. (i.e same card from the same house)
             point += (2*cardPoint1*housePoint1)*(remainingSecond/10)
-            if(!memoryGame.haveWonGame()){
+            //if the guy is Cedric Diggory (cd) then open 'something in the way' music
+            if(cardName == "CD" || cardName2 == "CD"){
+                setBackgroundMusic("sth_in_the_way")
+                Handler().postDelayed({
+                    //wait till the above track finishes
+                    setBackgroundMusic("background_music")
+                    //stopBackgroundMusic()
+                }, 6000)
+            }
+            else if(!memoryGame.haveWonGame()){
                 setBackgroundMusic("cards_matched")
                 Handler().postDelayed({
                     //wait till the above track finishes

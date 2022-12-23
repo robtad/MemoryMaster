@@ -1,5 +1,6 @@
 package com.robtad.memorymaster.models
 
+import android.content.Context
 import android.util.Log
 import com.robtad.memorymaster.GameModeActivity
 import com.robtad.memorymaster.SinglePlayerActivity
@@ -11,10 +12,12 @@ import com.robtad.memorymaster.utils.list1
 import com.robtad.memorymaster.utils.list2
 import com.robtad.memorymaster.utils.list3
 import com.robtad.memorymaster.utils.list4
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
 
 import java.util.HashMap
 
-class SinglePlayerMemoryGame(private val boardSize: BoardSize){
+class SinglePlayerMemoryGame(private val boardSize: BoardSize, private val context: Context){
 
     private val TAG = "SinglePlayerMemoryGame"
     val cards: List<MemoryCard>
@@ -58,10 +61,44 @@ class SinglePlayerMemoryGame(private val boardSize: BoardSize){
 
         cards = randomizedImages.map { MemoryCard(it) }
         //Log.i(TAG, "CARDS inside init =  $cards") //Log.i --> i = info
-
+        //print cards on the board in order
+        //file location: View-->Tool Windows-->Device File Explorer-->data-->data-->package name (com.robtad.memorymaster)-->files
+        writeToFile("cards_on_board")
     }
 
-    //to print contents of cards on the board
+    //to print contents of cards on the board: code down
+    fun writeToFile(fileName: String) {
+        val fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
+        val bufferedWriter = BufferedWriter(OutputStreamWriter(fileOutputStream))
+        var i = 0
+        var j = 1
+        for (item in randomizedImages) {
+            i++
+            if(i == 1){
+                bufferedWriter.write("---------row $i---------")
+                Log.i(TAG, "---------row $i---------")
+
+                bufferedWriter.newLine()
+            }
+            bufferedWriter.write(item["card"].toString() + " of house " + item["house"])
+            bufferedWriter.newLine()
+            //write on Logcat
+            Log.i(TAG, "${item["card"].toString()} of house ${item["house"]}")
+
+            if(i % boardSize.getWidth() == 0 && i < boardSize.numCards){
+                j++
+                bufferedWriter.newLine()
+                bufferedWriter.write("---------row $j---------")
+                Log.i(TAG, "---------row $j---------")
+                bufferedWriter.newLine()
+            }
+
+        }
+        bufferedWriter.close()
+    }
+
+    //print cards that are displayed on the board: code Up
+
 
     fun flipCard(position: Int) : Boolean{
         numCardFlips++

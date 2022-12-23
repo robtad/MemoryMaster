@@ -4,15 +4,19 @@ package com.robtad.memorymaster.models
 //import com.robtad.memorymaster.utils.DEFAULT_ICONS_HUFFLEPUFF
 //import com.robtad.memorymaster.utils.DEFAULT_ICONS_RAVENCLAW
 //import com.robtad.memorymaster.utils.DEFAULT_ICONS_SLYTHERIN
+import android.content.Context
+import android.util.Log
 import com.robtad.memorymaster.GameModeActivity
 import com.robtad.memorymaster.utils.list1
 import com.robtad.memorymaster.utils.list2
 import com.robtad.memorymaster.utils.list3
 import com.robtad.memorymaster.utils.list4
+import java.io.BufferedWriter
+import java.io.OutputStreamWriter
 
 
-class MultiPlayerMemoryGame(private val boardSize: BoardSize){
-
+class MultiPlayerMemoryGame(private val boardSize: BoardSize, private val context: Context){
+    private val TAG = "MultiPlayerMemoryGame"
     private lateinit var gameMode: GameModeActivity
     //var gameMode: Intent = Intent(this@MultiPlayerMemoryGame, GameModeActivity::class.java)
     val cards: List<MemoryCard>
@@ -24,6 +28,8 @@ class MultiPlayerMemoryGame(private val boardSize: BoardSize){
     var score1: Float = 0.0F //player1 score
     var score2: Float = 0.0F //player2 score
     private var gameTypeTag = 0 //gameTypeTage is an integer variable to denote if the game is single or multi player
+    private var randomizedImages: List<java.util.HashMap<String, out Any>>
+
     init {
         //How pictures will be selected to be displayed on the board
         val chosenImagesGryffindor: List<HashMap<String, out Any>> = list1.shuffled().take(boardSize.getNumPairs()/4)
@@ -38,11 +44,48 @@ class MultiPlayerMemoryGame(private val boardSize: BoardSize){
         val chosenImagesSlytherin: List<HashMap<String, out Any>> = list4.shuffled().take(boardSize.getNumPairs()/4)
         val randomizedImagesSlytherin: List<HashMap<String, out Any>> = (chosenImagesSlytherin + chosenImagesSlytherin).shuffled()
 
-        var randomizedImages = randomizedImagesGryffindor + randomizedImagesHufflepuff + randomizedImagesRavenclaw + randomizedImagesSlytherin
+        randomizedImages = randomizedImagesGryffindor + randomizedImagesHufflepuff + randomizedImagesRavenclaw + randomizedImagesSlytherin
         randomizedImages = randomizedImages.shuffled()
 
         cards = randomizedImages.map { MemoryCard(it) }
+        //print cards on the board in order
+        //file location: View-->Tool Windows-->Device File Explorer-->data-->data-->package name (com.robtad.memorymaster)-->files
+
+        writeToFile("cards_on_board")
     }
+
+    //to print contents of cards on the board: code down
+    fun writeToFile(fileName: String) {
+        val fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
+        val bufferedWriter = BufferedWriter(OutputStreamWriter(fileOutputStream))
+        var i = 0
+        var j = 1
+        for (item in randomizedImages) {
+            i++
+            if(i == 1){
+                bufferedWriter.write("---------row $i---------")
+                Log.i(TAG, "---------row $i---------")
+
+                bufferedWriter.newLine()
+            }
+            bufferedWriter.write(item["card"].toString() + " of house " + item["house"])
+            bufferedWriter.newLine()
+            //write on Logcat
+            Log.i(TAG, "${item["card"].toString()} of house ${item["house"]}")
+
+            if(i % boardSize.getWidth() == 0 && i < boardSize.numCards){
+                j++
+                bufferedWriter.newLine()
+                bufferedWriter.write("---------row $j---------")
+                Log.i(TAG, "---------row $j---------")
+                bufferedWriter.newLine()
+            }
+
+        }
+        bufferedWriter.close()
+    }
+
+    //print cards that are displayed on the board: code Up
 
 
     fun flipCard(position: Int) : Boolean{
